@@ -15,9 +15,15 @@ export async function GET(req: NextRequest) {
   const campaignId = searchParams.get("campaignId");
 
   try {
-    const snapshot = await db.collection("posts")
-      .where("campaignId", "==", campaignId || undefined) // if campaignId is null, ignore this filter
-      .get();
+    let query = db.collection("posts");
+    // Apply filters if provided
+    if (campaignId) {
+      query = query.where("campaignId", "==", campaignId);
+    }
+    if (uid) {
+      query = query.where("createdBy", "==", uid);
+    }
+    const snapshot = await query.get();
 
     if (snapshot.empty) {
       return NextResponse.json([], { status: 200 });
