@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "seedFirestore.js", "lib/firebase-admin.ts"  ],
   "exclude": [
     "node_modules"
   ]
