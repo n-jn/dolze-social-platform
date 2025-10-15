@@ -14,10 +14,14 @@ import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
 import { DeleteCampaignButton } from "../../../components/campaigns/DeleteCampaignButton";
 import { Campaign } from "@/models/campaign";
+import { useUser } from "reactfire";
 
 const platforms = ["Twitter", "Instagram", "LinkedIn"];
 
 export default function CampaignsPage() {
+  const { data } = useUser();
+  console.log("User data:", data);
+  const uid = data?.uid;
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<Partial<Campaign>>({
@@ -30,14 +34,14 @@ export default function CampaignsPage() {
   const [datePicker, setDatePicker] = useState<"start" | "end" | null>(null);
 
   const fetchCampaigns = async () => {
-    const res = await fetch("/api/campaigns", { cache: "no-store" });
+    const res = await fetch("/api/campaigns?uid=" + uid, { cache: "no-store" });
     const data = await res.json();
     setCampaigns(data);
   };
 
   useEffect(() => {
     fetchCampaigns();
-  }, []);
+  }, [uid]);
 
   const handleSave = async () => {
     const method = form.id ? "PATCH" : "POST";
@@ -46,6 +50,7 @@ export default function CampaignsPage() {
       ...form,
       startDate: form.startDate,
       endDate: form.endDate,
+      createdBy: data?.uid,
     };
 
     // Store previous state for rollback

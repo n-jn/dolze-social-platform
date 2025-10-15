@@ -154,7 +154,6 @@ export default function CampaignDetailPage({ campaign }: Props) {
           scheduledDate: date,
           campaignId: campaign.id,
           status: "draft",
-          createdBy: campaign.createdBy,
         });
       }
     }
@@ -174,8 +173,6 @@ export default function CampaignDetailPage({ campaign }: Props) {
 
       setGeneratedPosts((prev) => prev.filter((_, i) => i !== index));
       setSavedPosts((prev) => [...prev, post]);
-
-      toast({ title: "Post saved", description: "Your post was saved successfully." });
     } catch (err) {
       console.error(err);
       toast({ title: "Error", description: "Failed to save post." });

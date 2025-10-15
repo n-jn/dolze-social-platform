@@ -57,7 +57,8 @@ export async function POST(req: NextRequest) {
       createdAt: now,
       updatedAt: now,
       scheduledDate,
-      id: "", // will be filled below
+      id: "", // will be filled below,
+      createdBy: data.createdBy,
     };
 
     const docRef = db.collection("posts").doc();

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Pencil, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 
 interface Props {
   campaignId: string;
