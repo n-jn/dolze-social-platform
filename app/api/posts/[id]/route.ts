@@ -1,6 +1,10 @@
 import admin from "@/lib/firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
+import DOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
 
+const window = new JSDOM("").window;
+const purify = DOMPurify(window);
 const db = admin.firestore();
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -12,9 +16,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     // Only allow updating scheduledDate, content, etc.
     const updateData: Partial<typeof data> = {};
-    if (data.scheduledDate) updateData.scheduledDate = data.scheduledDate;
-    if (data.content) updateData.content = data.content;
-    if (data.platform) updateData.platform = data.platform;
+
+    // Convert to JS Date
+    if (data.scheduledDate) updateData.scheduledDate = new Date(data.scheduledDate);
+
+    if (data.content) updateData.content = purify.sanitize(data.content);
+    if (data.platform) updateData.platform = purify.sanitize(data.platform);
 
     await db.collection("posts").doc(id).update(updateData);
 
@@ -32,7 +39,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   try {
     const doc = await db.collection("posts").doc(id).get();
     if (!doc.exists) return new NextResponse("Post not found", { status: 404 });
-    return NextResponse.json({ id: doc.id, ...doc.data() });
+    return NextResponse.json({
+      id: doc.id, ...doc.data(), scheduledDate: doc.data().scheduledDate.toDate(), // converts Firestore Timestamp to JS Date
+    });
   } catch (err: any) {
     console.error(err);
     return new NextResponse(err.message, { status: 500 });

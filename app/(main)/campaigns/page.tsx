@@ -6,28 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow, TableHead } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, Pencil, Trash } from "lucide-react";
+import { CalendarIcon, Pencil } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
-
-interface Campaign {
-  id?: string;
-  title: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-  targetPlatforms: string[];
-}
+import { DeleteCampaignButton } from "../../../components/campaigns/DeleteCampaignButton";
+import { Campaign } from "@/models/campaign";
 
 const platforms = ["Twitter", "Instagram", "LinkedIn"];
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState<Campaign>({
+  const [form, setForm] = useState<Partial<Campaign>>({
     title: "",
     description: "",
     startDate: new Date(),
@@ -51,14 +44,29 @@ export default function CampaignsPage() {
     const url = form.id ? `/api/campaigns/${form.id}` : "/api/campaigns";
     const body = {
       ...form,
-      startDate: form.startDate.toISOString(),
-      endDate: form.endDate.toISOString(),
+      startDate: form.startDate,
+      endDate: form.endDate,
     };
-    await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+
+    // Store previous state for rollback
+    const prevCampaigns = [...campaigns];
+
+    // Optimistically update UI
+    let newCampaigns;
+    if (form.id) {
+      // Edit
+      newCampaigns = campaigns.map((c) =>
+        c.id === form.id ? { ...c, ...form } : c
+      );
+    } else {
+      // Create
+      const tempId = `temp-${Date.now()}`;
+      newCampaigns = [
+        ...campaigns,
+        { ...form, id: tempId, startDate: form.startDate, endDate: form.endDate },
+      ];
+    }
+    setCampaigns(newCampaigns);
     setDialogOpen(false);
     setForm({
       title: "",
@@ -67,17 +75,43 @@ export default function CampaignsPage() {
       endDate: new Date(),
       targetPlatforms: [],
     });
-    fetchCampaigns();
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error("API error");
+      // Refetch campaigns to sync with backend
+      await fetchCampaigns();
+    } catch (err) {
+      // Rollback on failure
+      setCampaigns(prevCampaigns);
+      alert("Failed to save campaign. Rolled back changes.");
+    }
   };
 
+  // Optimistic delete with rollback
   const handleDelete = async (id: string) => {
-    await fetch(`/api/campaigns/${id}`, { method: "DELETE" });
-    fetchCampaigns();
+    // Store previous state for rollback
+    const prevCampaigns = [...campaigns];
+    // Immediately remove from UI
+    setCampaigns((prev) => prev.filter((c) => c.id !== id));
+    try {
+      const res = await fetch(`/api/campaigns/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("API error");
+      await fetchCampaigns();
+    } catch (err) {
+      // Rollback if API fails
+      setCampaigns(prevCampaigns);
+      alert("Failed to delete campaign. Rolled back changes.");
+    }
   };
 
   return (
     <div className="container py-10 space-y-8">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center md:flex-row flex-col gap-4">
         <h1 className="text-2xl font-bold tracking-tight">Campaign Management</h1>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -132,7 +166,6 @@ export default function CampaignsPage() {
                     </div>
                   )}
                 </div>
-
                 <div>
                   <Label>End Date</Label>
                   <Button
@@ -218,9 +251,16 @@ export default function CampaignsPage() {
         <TableBody>
           {campaigns.map((c) => (
             <TableRow key={c.id}>
-              <TableCell>{c.title}</TableCell>
-              <TableCell>{format(new Date(c.startDate), "PPP")}</TableCell>
-              <TableCell>{format(new Date(c.endDate), "PPP")}</TableCell>
+              <TableCell>
+                <Link
+                  href={`/campaigns/${c.id}`}
+                  className="text-blue-600 hover:underline font-medium m-auto"
+                >
+                  {c.title}
+                </Link>
+              </TableCell>
+              <TableCell>{format(c.startDate, "PPP")}</TableCell>
+              <TableCell>{format(c.endDate, "PPP")}</TableCell>
               <TableCell>{c.targetPlatforms.join(", ")}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button
@@ -237,9 +277,7 @@ export default function CampaignsPage() {
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id!)}>
-                  <Trash className="w-4 h-4 text-red-500" />
-                </Button>
+                <DeleteCampaignButton campaignId={c.id!} onDelete={handleDelete} />
               </TableCell>
             </TableRow>
           ))}

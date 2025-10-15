@@ -20,7 +20,7 @@ export const AuthCard = () => {
 
   useEffect(() => {
     if (user) {
-      router.push("/app");
+      router.push("/campaigns");
     }
   }, [user]);
   return (
@@ -29,7 +29,7 @@ export const AuthCard = () => {
         <CardHeader>
           <CardTitle>{isShowingSignUp ? "Sign Up" : "Sign In"}</CardTitle>
           <CardDescription>
-            Give them a reason to {isShowingSignUp ? "sign up" : "sign in"}.
+            {isShowingSignUp ? "Sign up and start planning your campaigns" : "Sign in and continue where you left off."}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -48,7 +48,6 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
       setIsLoading(true);
       const user = await createUserWithEmailAndPassword(auth, email, password);
       if (user?.user.uid && user.user.email) {
-        // create user in firestore here if you want
         toast({ title: "Account created!" });
         onSignUp?.();
       }

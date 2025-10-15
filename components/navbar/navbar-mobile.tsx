@@ -16,34 +16,31 @@ export const NavbarMobile = () => {
   return (
     <>
       <NavigationMenu>
-        <NavigationMenuList>
+        <NavigationMenuList className="text-center">
           <NavigationMenuItem>
             <NavigationMenuTrigger className="-mr-4">
               <MenuIcon />
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="flex flex-col p-1">
+            <NavigationMenuContent className="flex flex-col p-1 justify-center items-center">
               <NavigationMenuLink
-                href="#1"
+                href="/campaigns"
                 className={buttonVariants({ variant: "link" })}
               >
-                Item 1
+                Campaigns
               </NavigationMenuLink>
               <NavigationMenuLink
-                href="#2"
+                href="/calendar"
                 className={buttonVariants({ variant: "link" })}
               >
-                Item 2
+                Calendar
               </NavigationMenuLink>
-              <NavigationMenuLink
-                href="#3"
-                className={buttonVariants({ variant: "link" })}
-              >
-                Item 3
-              </NavigationMenuLink>
-              <div className="flex flex-col mb-0.5">
-                <NavbarUserLinks />
-              </div>
+
             </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <div className="flex flex-col mb-2">
+              <NavbarUserLinks />
+            </div>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>

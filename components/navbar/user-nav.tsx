@@ -25,7 +25,7 @@ export function UserNav() {
       title: "Logged out",
       description: "You have been logged out.",
     });
-    router.replace("/");
+    router.replace("/login");
   };
   return (
     <DropdownMenu>
@@ -57,10 +57,8 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Billing</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
+          <DropdownMenuItem disabled>Profile</DropdownMenuItem>
+          <DropdownMenuItem disabled>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={doLogout}>Log out</DropdownMenuItem>

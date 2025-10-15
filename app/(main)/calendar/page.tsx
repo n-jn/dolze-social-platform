@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import CampaignFilter from "@/components/CampaignFilter";
-import PostsCalendar from "@/components/PostsCalendar";
+import CampaignFilter from "@/components/campaigns/CampaignFilter";
+import PostsCalendar from "@/components/calendar/PostsCalendar";
 import useUserUID from "@/hooks/useUserUID";
 
 export default function Calendar() {

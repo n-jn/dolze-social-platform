@@ -9,15 +9,15 @@ import { ReactNode } from "react";
 const font = Work_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Venefish | Vercel Next.JS Firebase Shadcn/ui Tailwind Boilerplate",
+  title: "SM Management Platform | SDE-1 Dolze - Nikhil Jain",
   description:
-    "Venefish is a Vercel Next.JS Firebase Shadcn/ui Tailwind Boilerplate project to help you get started with your next project.",
+    "A social media management platform to schedule and manage posts across multiple platforms.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={cn(font.className)}>
+      <body className={`${cn(font.className)} min-h-full min-w-full`}>
         <MyFirebaseProvider>
           {children}
           <Toaster />
