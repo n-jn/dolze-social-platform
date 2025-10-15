@@ -51,6 +51,7 @@ export default function PostsCalendar({
 
   const fetchPosts = async () => {
     if (!uid) return;
+    console.log("Fetching posts for uid:", uid);
     const res = await fetch(`/api/posts?uid=${uid}`, { cache: "no-store" });
     const data: Post[] = await res.json();
 

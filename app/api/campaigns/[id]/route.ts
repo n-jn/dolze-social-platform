@@ -40,7 +40,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     return new Response("startDate cannot be after endDate", { status: 400 });
   }
 
-  // Prevent updating createdBy, createdAt, id
+  // Prevent updating createdAt, id
   delete data.createdAt;
   delete data.id;
   

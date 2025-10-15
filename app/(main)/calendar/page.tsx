@@ -2,10 +2,11 @@
 import { useState } from "react";
 import CampaignFilter from "@/components/campaigns/CampaignFilter";
 import PostsCalendar from "@/components/calendar/PostsCalendar";
-import useUserUID from "@/hooks/useUserUID";
+import { useUser } from "reactfire";
 
 export default function Calendar() {
-  const uid = useUserUID();
+  const { data } = useUser();
+  const uid = data?.uid || null;
   const [filterCampaign, setFilterCampaign] = useState<string>("");
   const [filterPlatform, setFilterPlatform] = useState<string>("");
   const [calendarKey, setCalendarKey] = useState<number>(0);

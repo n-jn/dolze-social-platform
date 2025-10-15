@@ -11,6 +11,7 @@ import { Pencil, Trash, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Campaign } from "@/models/campaign";
 import { Post } from "@/models/post";
+import { useUser } from "reactfire";
 
 interface Props {
   campaign: Campaign;
@@ -106,6 +107,9 @@ function PostEditor({
 
 export default function CampaignDetailPage({ campaign }: Props) {
   const router = useRouter();
+  const { data } = useUser();
+  const uid = data?.uid || null;
+  console.log("CampaignDetailPage rendered with campaign:", campaign, uid);
   const [generatedPosts, setGeneratedPosts] = useState<Post[]>([]);
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [editIndex, setEditIndex] = useState<string | null>(null);
@@ -116,7 +120,7 @@ export default function CampaignDetailPage({ campaign }: Props) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`/api/posts?campaignId=${campaign.id}`, {
+        const res = await fetch(`/api/posts?campaignId=${campaign.id}&uid=${uid}`, {
           cache: "no-store",
         });
         const data = await res.json();
@@ -133,7 +137,7 @@ export default function CampaignDetailPage({ campaign }: Props) {
         });
       }
     })();
-  }, [campaign.id]);
+  }, [campaign.id, uid]);
 
   // Generate mock posts client-side for demonstration
   const generatePosts = async () => {
@@ -154,6 +158,7 @@ export default function CampaignDetailPage({ campaign }: Props) {
           scheduledDate: date,
           campaignId: campaign.id,
           status: "draft",
+          createdBy: uid || "<unknown>",
         });
       }
     }

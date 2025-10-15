@@ -71,6 +71,7 @@ export default function CampaignsPage() {
         { ...form, id: tempId, startDate: form.startDate, endDate: form.endDate },
       ];
     }
+
     setCampaigns(newCampaigns);
     setDialogOpen(false);
     setForm({

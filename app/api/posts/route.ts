@@ -15,12 +15,15 @@ export async function GET(req: NextRequest) {
   const campaignId = searchParams.get("campaignId");
 
   try {
-    let query = db.collection("posts") as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
+    const snapshot = await db.collection("posts")
+      .where("campaignId", "==", campaignId || undefined) // if campaignId is null, ignore this filter
+      .get();
 
-    if (uid) query = query.where("createdBy", "==", uid);
-    if (campaignId) query = query.where("campaignId", "==", campaignId);
+    if (snapshot.empty) {
+      return NextResponse.json([], { status: 200 });
+    }
 
-    const snapshot = await query.get();
+    // Map Firestore documents to Post objects
     const posts: Post[] = snapshot.docs.map((doc) => {
       const data = doc.data() as Omit<Post, "id">;
       return {
@@ -58,7 +61,6 @@ export async function POST(req: NextRequest) {
       updatedAt: now,
       scheduledDate,
       id: "", // will be filled below,
-      createdBy: data.createdBy,
     };
 
     const docRef = db.collection("posts").doc();

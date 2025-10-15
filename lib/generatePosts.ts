@@ -9,7 +9,6 @@ export async function generatePosts(campaign: Campaign) {
     platform,
     scheduledDate: new Date(startDate.getTime() + i * 86400000),
     status: "draft",
-    createdBy: campaign.createdBy,
   }));
 
   for (const post of posts) {
