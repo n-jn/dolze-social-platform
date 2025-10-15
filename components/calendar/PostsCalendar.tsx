@@ -10,7 +10,7 @@ import PlatformIcon from "./PlatformIcon";
 import { Post } from "@/models/post";
 
 interface PostsCalendarProps {
-  uid: string;
+  uid: string | null;
   filterCampaign?: string;
   filterPlatform?: string;
 }
@@ -38,7 +38,6 @@ export default function PostsCalendar({
     return filteredPosts.map((p) => ({
       id: p.id,
       title: p.content.slice(0, 50),
-      // convert UTC stored value -> local Date
       start: p.scheduledDate,
       allDay: false,
       backgroundColor: platformColors[p.platform] || "#6B7280",
@@ -49,18 +48,6 @@ export default function PostsCalendar({
 
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  function toDate(input: any): Date {
-    if (!input) return new Date();
-    // Firestore Timestamp (has toDate())
-    if (typeof input.toDate === "function") return input.toDate();
-    // Firestore legacy object with _seconds or seconds
-    const seconds = (input && (input._seconds ?? input.seconds)) as number | undefined;
-    if (typeof seconds === "number") return new Date(seconds * 1000);
-    if (input instanceof Date) return input;
-    // ISO strings / numbers
-    return new Date(input);
-  }
 
   const fetchPosts = async () => {
     if (!uid) return;

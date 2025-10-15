@@ -1,7 +1,7 @@
 {
-  "name": "venefish",
-  "description": "Boilerplate & template for Vercel projects using Next.js, Firebase and shadcn/ui.",
-  "author": "Enesien Software <contact@enesien.com> (https://enesien.com)",
+  "name": "dolze-social",
+  "description": "A social media campaign-management platform.",
+  "author": "Nikhil Jain <nikhiljain.devv@gmail.com>",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Campaign } from "@/models/campaign";
 
 interface CampaignFilterProps {
-  uid: string;
+  uid: string | null;
   onFilterChange: (campaignId: string) => void;
 }
 
